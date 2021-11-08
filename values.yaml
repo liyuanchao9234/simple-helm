@@ -10,10 +10,10 @@ service1:
   # use default serviceAccount
   ressources:
     limites:
-      cpu:2000m
+      cpu: 2000m
       memory: 64Mi
     requests:
-      cpu:200m
+      cpu: 200m
       memory: 32Mi
   serviceAccount:
     # Specifies whether a service account should be created
@@ -29,7 +29,7 @@ service1:
   
   #service 2 configuration
 service2:
-  type:LoadBalancer
+  type: LoadBalancer
   port: 80
   targetPort: 8080
   name: service2
@@ -37,10 +37,10 @@ service2:
   pullPolicy: IfNotPresent
   ressources:
     limites:
-      cpu:1000m
+      cpu: 1000m
       memory: 32Mi
     requests:
-      cpu:100m
+      cpu: 100m
       memory: 16Mi
   # use service2 serviceAccount
   serviceAccount:
@@ -80,7 +80,7 @@ ingress:
   tls: 
   - hosts:
     - service.myapp.com
-     secretName: myapp-secret
+    secretName: myapp-secret
 
 
 #create more pod when exceed 70%cpu and 90% mem
@@ -98,7 +98,7 @@ tolerations: []
 affinity: {}
 podSecurityContext: {}
   # fsGroup: 2000
- securityContext: {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
