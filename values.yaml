@@ -1,34 +1,104 @@
-# Default values for myapp.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 2
-
-image:
-  repository: nginx
+#service 1 configuration
+service1:
+  type: Nodeport
+  port: 80
+  targetPort: 8080
+  name: service1
+  replicas: 2
+  image: nginxdemos/nginx-hello:plain-text
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
+  # use default serviceAccount
+  ressources:
+    limites:
+      cpu:2000m
+      memory: 64Mi
+    requests:
+      cpu:200m
+      memory: 32Mi
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: false
   # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+    name: default
+  hpa:
+    enabled: false
+    #minReplicas: 1
+    #maxReplicas: 6
+    #targetCPUUtilizationPercentage: 70
+    #targetMemoryUtilizationPercentage: 90
+  
+  #service 2 configuration
+service2:
+  type:LoadBalancer
+  port: 80
+  targetPort: 8080
+  name: service2
+  image: nginxdemos/nginx-hello:plain-text
+  pullPolicy: IfNotPresent
+  ressources:
+    limites:
+      cpu:1000m
+      memory: 32Mi
+    requests:
+      cpu:100m
+      memory: 16Mi
+  # use service2 serviceAccount
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+  # Annotations to add to the service account
+    name: SA-service2
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 90
 
-podAnnotations: {}
 
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+  - host: service.myapp.com
+    paths:
+    - path: /service1
+      pathType: Prefix
+      backend:
+        service:
+          name: service1
+          port:
+            number: 80
+    - path: /service2
+      pathType: Prefix
+      backend:
+        service:
+          name: service2
+          port:
+            number: 80
+  tls: 
+  - hosts:
+    - service.myapp.com
+     secretName: myapp-secret
+
+
+#create more pod when exceed 70%cpu and 90% mem
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 90
+
+
+#no need for sample demonstration
+nodeSelector: {}
+tolerations: []
+affinity: {}
 podSecurityContext: {}
   # fsGroup: 2000
-
-securityContext: {}
+ securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -36,47 +106,4 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: LoadBalancer
-  port: 80
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

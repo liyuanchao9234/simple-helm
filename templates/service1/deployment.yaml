@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.service1.name }}-deploy
+  labels:
+    myapp.io/name: {{ .Values.service1.name }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.service1.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      myapp.io/name: {{ .Values.service1.name }}
+  template:
+    metadata:
+      myapp.io/deployName: {{ .Values.service1.name }}-deploy
+    labels:
+        myapp.io/name: {{ .Values.service1.name }}
+    spec:
+      containers:
+        - name: {{ Values.service1.name }}-img
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.service1.image }}"
+          imagePullPolicy: {{ .Values.service1.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
