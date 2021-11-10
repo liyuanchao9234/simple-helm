@@ -10,11 +10,11 @@
 
 *the ip 35.233.90.15 is proveided by the GKE*
 
-#### defaut route:  35.233.90.15.nip.io 
-**A ClusterIP k8s service with a simple gninx site. the portal is realized by a staic file conserved in configmap mounted in the pod of the service.**
+### Defaut route:  35.233.90.15.nip.io 
+**A ClusterIP k8s service with a simple gninx site. the portal is realized by a staic file conserved in configmap mounted in the pod of the service.
 
-#### route:  /service1 
-**A nodePort k8s service who has 2 pod with a serviceaccount to communicate with apiserver of the cluster**
+### Route:  /service1 
+A nodePort k8s service who has 2 pod with a serviceaccount to communicate with apiserver of the cluster
 
-#### route:  /service2
-**A LoadBalancer service with a hpa autoscaling strategy when the pod's cpu or mem exceede a limit. it has it own static ip  : http://146.148.28.150/**
+### Route:  /service2
+A LoadBalancer service with a hpa autoscaling strategy when the pod's cpu or mem exceede a limit. it has it own static ip  : http://146.148.28.150/
