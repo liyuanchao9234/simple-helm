@@ -1,6 +1,6 @@
 #service 1 configuration
 service1:
-  type: Nodeport
+  type: NodePort
   port: 80
   targetPort: 8080
   name: service1
@@ -8,13 +8,13 @@ service1:
   image: nginxdemos/nginx-hello:plain-text
   pullPolicy: IfNotPresent
   # use default serviceAccount
-  ressources:
-    limites:
+  resources:
+    limits: 
       cpu: 2000m
-      memory: 64Mi
+      memory: 4Gi
     requests:
-      cpu: 200m
-      memory: 32Mi
+      cpu: 500m
+      memory: 1Gi
   serviceAccount:
     # Specifies whether a service account should be created
     create: false
@@ -35,22 +35,23 @@ service2:
   name: service2
   image: nginxdemos/nginx-hello:plain-text
   pullPolicy: IfNotPresent
-  ressources:
-    limites:
+  resources:
+    limits:
       cpu: 1000m
-      memory: 32Mi
+      memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 16Mi
+      cpu: 500m
+      memory: 1Gi
   # use service2 serviceAccount
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
   # Annotations to add to the service account
     name: SA-service2
+ #create more pod when exceed 70%cpu and 90% mem
   hpa:
     enabled: true
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 6
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 90
@@ -61,35 +62,25 @@ ingress:
   enabled: true
   className: nginx
   hosts:
-  - host: service.myapp.com
+  - host: "35.233.90.15.nip.io"
     paths:
     - path: /service1
       pathType: Prefix
       backend:
         service:
-          name: service1
+          name: service1-svc
           port:
             number: 80
     - path: /service2
       pathType: Prefix
       backend:
         service:
-          name: service2
+          name: service2-svc
           port:
             number: 80
-  tls: 
-  - hosts:
-    - service.myapp.com
-    secretName: myapp-secret
 
 
-#create more pod when exceed 70%cpu and 90% mem
-hpa:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 6
-  targetCPUUtilizationPercentage: 70
-  targetMemoryUtilizationPercentage: 90
+
 
 
 #no need for sample demonstration

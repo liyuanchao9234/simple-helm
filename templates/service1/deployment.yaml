@@ -5,17 +5,16 @@ metadata:
   labels:
     myapp.io/name: {{ .Values.service1.name }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.service1.replicaCount }}
+  {{- if not .Values.service1.hpa.enabled }}
+  replicas: {{ .Values.service1.replicas}}
   {{- end }}
   selector:
     matchLabels:
-      myapp.io/name: {{ .Values.service1.name }}
+      app: {{ .Values.service1.name }}
   template:
     metadata:
-      myapp.io/deployName: {{ .Values.service1.name }}-deploy
-    labels:
-        myapp.io/name: {{ .Values.service1.name }}
+      labels:
+        app: {{ .Values.service1.name }}
     spec:
       containers:
         - name: {{ .Values.service1.name }}-img
@@ -25,7 +24,7 @@ spec:
           imagePullPolicy: {{ .Values.service1.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service2.targetPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -36,7 +35,7 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.service1.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
