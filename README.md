@@ -1,9 +1,13 @@
 # simple-helm
 
 *the exemple is accomplished in a cluster k8s on GKE/GCP*
+
 *A nginx kubernete's ingress controller is deployed in the cluster to manage the redirection of requests*
+
 *the url is http://35.233.90.15.nip.io*
+
 *nip.io is a dns service that allows us to map a IP Address to a hostname wihout have a reall FQDN in public*
+
 *the ip 35.233.90.15 is proveided by the GKE*
 
 #### defaut route:  35.233.90.15.nip.io 
