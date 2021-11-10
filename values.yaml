@@ -56,8 +56,6 @@ service2:
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 90
 
-
-
 ingress:
   enabled: true
   className: nginx
@@ -78,9 +76,6 @@ ingress:
           name: service2-svc
           port:
             number: 80
-
-
-
 
 
 #no need for sample demonstration
